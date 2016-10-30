@@ -7,8 +7,10 @@
 #include <stdlib.h>
 
 #define SIZE 10
+#define NO_SHIPS 17
 
-int og[SIZE][SIZE], game_grid[SIZE][SIZE];
+int counter = 0;
+int og[SIZE][SIZE], game_grid[SIZE][SIZE], opponent_game_grid[SIZE][SIZE];
 char col[25] = "  |0|1|2|3|4|5|6|7|8|9|";
 char row[10][4] = {
                 " 0|",
@@ -21,6 +23,11 @@ char row[10][4] = {
                 " 7|",
                 " 8|",
                 " 9|" };
+
+typedef struct request_move
+{
+    int first, second;
+}ship_move;
 
 void clearScreen()
 {
@@ -57,6 +64,57 @@ void print_outer_grid()
     printf("X Missed Attack\n\n");
 }
 
+void print_game_grid()
+{
+    clearScreen();
+    int i, j, k;
+
+    for(i = 0; i < sizeof(col) / sizeof(char); i++)
+        printf("%c", col[i]);
+    printf("\t\t");
+    for(i = 0; i < sizeof(col) / sizeof(char); i++)
+        printf("%c", col[i]);
+
+    printf("\n");
+    for(i = 0; i < 10; i++)
+    {
+        for(j = 0; j < 4; j++)
+            printf("%c", row[i][j]);
+        for(k = 0; k < 10; k++)
+            {
+                if(game_grid[i][k] == 0)
+                    printf(" ");
+                else if(game_grid[i][k] == 1)
+                    printf("0");
+                else if(game_grid[i][k] == -1)
+                    printf("X");
+                else if(game_grid[i][k] == -2)
+                    printf("@");
+                printf("|");
+            }
+
+        printf("\t\t");
+        for(j = 0; j < 4; j++)
+            printf("%c", row[i][j]);
+        for(k = 0; k < 10; k++)
+            {
+                if(opponent_game_grid[i][k] == 0)
+                    printf(" ");
+                else if(opponent_game_grid[i][k] == -1)
+                    printf("X");
+                else if(opponent_game_grid[i][k] == -2)
+                    printf("@");
+                printf("|");
+            }
+        printf("\n");
+    }
+    printf("\n");
+    printf("--Legend--\n");
+    printf("O Ship\n");
+    printf("@ Ship with hit\n");
+    printf("X Missed Attack\n\n");
+}
+
 void init_grids()
 {
     int i, j;
@@ -66,6 +124,7 @@ void init_grids()
             {
                 og[i][j] = 0;
                 game_grid[i][j] = 0;
+                opponent_game_grid[i][j] = 0;
             }            
     }
 }
@@ -144,6 +203,85 @@ void enter_grid()
     print_outer_grid();
 }
 
+int update(int response, ship_move opponent)
+{
+    if(response == -3)
+        return 0;
+    opponent_game_grid[opponent.first][opponent.second] = response;
+    return 1;
+}
+
+int check_update(ship_move challenger)
+{
+    if(game_grid[challenger.first][challenger.second] == 1)
+    {
+        if(++counter == NO_SHIPS)
+            return -3;
+        return -2;
+    }
+    return -1;
+}
+
+void tcp_connection_client(int * client_fd)
+{
+    struct sockaddr_in serv_addr;
+
+    *client_fd = socket(AF_INET, SOCK_STREAM, 0);
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+    serv_addr.sin_port = htons(3000);
+
+    printf("Ready to ask\n");
+    if( connect(*client_fd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0)
+    {
+        perror("Error in connecting\n");
+        exit(0);
+    }
+}
+
+void make_move(int client_fd)
+{
+    ship_move challenger;
+    printf("Attack\n");
+    printf("Enter the x and y coordinates: ");
+    scanf("%d %d", &challenger.first, &challenger.second);        
+    send(client_fd, &challenger, sizeof(challenger), 0);
+
+    //get response
+    int response;
+    recv(client_fd, &response, sizeof(response), 0);
+    if(!update(response, challenger))
+    {
+        printf("Game Ends\n");
+        // add end game scenes
+    }
+}
+
+void put_response(int client_fd)
+{
+    ship_move opponent;
+    recv(client_fd, &opponent, sizeof(opponent), 0);
+    //display(opponent);
+    int response = check_update(opponent);
+    send(client_fd, &response, sizeof(response), 0);
+}
+
+void start_game()
+{
+    int client_fd;
+    tcp_connection_client(&client_fd);
+
+    while(1)
+    {
+        print_game_grid();
+        put_response(client_fd);
+        print_game_grid();
+        make_move(client_fd);
+        print_game_grid();
+    }
+    close(client_fd);
+}
+
 int main()
 {
     int i, j, k, l;
@@ -154,6 +292,7 @@ int main()
 
     init_grids();
     enter_grid();
+    start_game();
  
     return 0;
 }
