@@ -9,6 +9,15 @@
 #define SIZE 10
 #define NO_SHIPS 17
 
+/*
+    In the gird.
+    0 - Sea
+    1 - Ship
+    -1 - Sea Hit
+    -2 - Boat Hit
+    -3 - Opponent Won
+*/
+
 int counter = 0;
 int og[SIZE][SIZE], game_grid[SIZE][SIZE], opponent_game_grid[SIZE][SIZE];
 char col[25] = "  |0|1|2|3|4|5|6|7|8|9|";
@@ -215,10 +224,12 @@ int check_update(ship_move challenger)
 {
     if(game_grid[challenger.first][challenger.second] == 1)
     {
+        game_grid[challenger.first][challenger.second] = -2;
         if(++counter == NO_SHIPS)
             return -3;
         return -2;
     }
+    game_grid[challenger.first][challenger.second] = -1;
     return -1;
 }
 
@@ -248,18 +259,27 @@ void put_response(int client_fd)
 void tcp_connection_server(int * server_fd, int * client_fd)
 {
     struct sockaddr_in server_addr, client_addr;    
-    int client_addr_len;
+    int client_addr_len, port_no;
+
+    printf("Enter the port no: ");
+    scanf(" %d", &port_no);
 
     *server_fd = socket(AF_INET, SOCK_STREAM, 0);
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = INADDR_ANY;
-    server_addr.sin_port = htons(3000);
+    server_addr.sin_port = htons(port_no);
 
     printf("\tBinding\n");
-    if( bind(*server_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0 )
+
+    while( bind(*server_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0 )
     {
+        clearScreen();
         perror("Error in Binding.\n");
-        exit(0);
+
+        printf("\tBinding\n");
+        printf("Enter the port no: ");
+        scanf(" %d", &port_no);
+        server_addr.sin_port = htons(port_no);
     }
 
     printf("\tBinded and Listening\n");
