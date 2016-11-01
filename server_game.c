@@ -49,6 +49,8 @@ void print_outer_grid()
 {
     clearScreen();
     int i, j, k;
+
+    printf("\tYour Grid\n");
     for(i = 0; i < sizeof(col) / sizeof(char); i++)
         printf("%c", col[i]);
     printf("\n");
@@ -78,6 +80,7 @@ void print_game_grid()
     clearScreen();
     int i, j, k;
 
+    printf("\tYour Grid\t\t      Opponenet Grid\n");
     for(i = 0; i < sizeof(col) / sizeof(char); i++)
         printf("%c", col[i]);
     printf("\t\t");
