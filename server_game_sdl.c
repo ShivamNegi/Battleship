@@ -17,7 +17,7 @@
 */
 
 int counter = 0;
-int og[SIZE][SIZE], game_grid[SIZE][SIZE], opponent_game_grid[SIZE][SIZE];
+int original_arr[SIZE][SIZE], game_grid[SIZE][SIZE], opponent_game_grid[SIZE][SIZE];
 char col[25] = "  |0|1|2|3|4|5|6|7|8|9|";
 char row[10][4] = {
                 " 0|",
@@ -58,9 +58,9 @@ void print_outer_grid()
             printf("%c", row[i][j]);
         for(k = 0; k < 10; k++)
             {
-                if(og[i][k] == 0)
+                if(original_arr[i][k] == 0)
                     printf(" ");
-                if(og[i][k] == 1)
+                if(original_arr[i][k] == 1)
                     printf("O");
                 printf("|");
             }
@@ -132,17 +132,17 @@ void init_grids()
     {
         for(j = 0; j < SIZE; j++)
             {
-                og[i][j] = 0;
+                original_arr[i][j] = 0;
                 game_grid[i][j] = 0;
                 opponent_game_grid[i][j] = 0;
             }            
     }
 }
 
-int entry_og(int xs, int ys, int xe, int ye, int size)
+int entry_original_arr(int xs, int ys, int xe, int ye, int size)
 {
     // checking if in range if not return 0
-    if( (xe - xs + ye - ys) != size - 1 || xs < 0 || xs > 9 || ys < 0 || ys > 9 || xe < 0 || xe > 9 || ye < 0 || ye > 9 || og[xe][ye] == 1)
+    if( (xe - xs + ye - ys) != size - 1 || xs < 0 || xs > 9 || ys < 0 || ys > 9 || xe < 0 || xe > 9 || ye < 0 || ye > 9 || original_arr[xe][ye] == 1)
         return 0;
     // traversing variables
     int i, j;
@@ -151,7 +151,7 @@ int entry_og(int xs, int ys, int xe, int ye, int size)
     {
         for(i = xs; i <= xe; i++)
             {
-                og[i][ys] = 1;
+                original_arr[i][ys] = 1;
                 game_grid[i][ys] = 1;
             }
     }
@@ -159,7 +159,7 @@ int entry_og(int xs, int ys, int xe, int ye, int size)
     {
         for(i = ys; i <= ye; i++)
             {
-                og[xs][i] = 1;
+                original_arr[xs][i] = 1;
                 game_grid[xs][i] = 1;
             }
     }
@@ -177,7 +177,7 @@ void enter_grid()
     do
     {
         scanf("%d %d %d %d", &xs, &ys, &xe, &ye);
-    }while(entry_og(xs, ys, xe, ye, 5) == 0);
+    }while(entry_original_arr(xs, ys, xe, ye, 5) == 0);
 
     print_outer_grid();
     printf("Enter ship placments by specifying the the end points of each ship. Ex. Patrol Boat (size 2): 1 1 1 2\n");
@@ -185,7 +185,7 @@ void enter_grid()
     do
     {
         scanf("%d %d %d %d", &xs, &ys, &xe, &ye);
-    }while(entry_og(xs, ys, xe, ye, 4) == 0);
+    }while(entry_original_arr(xs, ys, xe, ye, 4) == 0);
 
     print_outer_grid();
     printf("Enter ship placments by specifying the the end points of each ship. Ex. Patrol Boat (size 2): 1 1 1 2\n");
@@ -193,7 +193,7 @@ void enter_grid()
     do
     {
         scanf("%d %d %d %d", &xs, &ys, &xe, &ye);
-    }while(entry_og(xs, ys, xe, ye, 3) == 0);
+    }while(entry_original_arr(xs, ys, xe, ye, 3) == 0);
 
     print_outer_grid();
     printf("Enter ship placments by specifying the the end points of each ship. Ex. Patrol Boat (size 2): 1 1 1 2\n");
@@ -201,7 +201,7 @@ void enter_grid()
     do
     {
         scanf("%d %d %d %d", &xs, &ys, &xe, &ye);
-    }while(entry_og(xs, ys, xe, ye, 3) == 0);    
+    }while(entry_original_arr(xs, ys, xe, ye, 3) == 0);    
 
     print_outer_grid();
     printf("Enter ship placments by specifying the the end points of each ship. Ex. Patrol Boat (size 2): 1 1 1 2\n");
@@ -209,7 +209,7 @@ void enter_grid()
     do
     {
         scanf("%d %d %d %d", &xs, &ys, &xe, &ye);
-    }while(entry_og(xs, ys, xe, ye, 2) == 0);    
+    }while(entry_original_arr(xs, ys, xe, ye, 2) == 0);    
     print_outer_grid();
 }
 
