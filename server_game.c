@@ -18,7 +18,7 @@
 
 int oppo_score = 0, my_score = 0;
 int og[SIZE][SIZE], game_grid[SIZE][SIZE], opponent_game_grid[SIZE][SIZE];
-char col[25] = "  |0|1|2|3|4|5|6|7|8|9|", buf[100];
+char col[25] = "  |A|B|C|D|E|F|G|H|I|J|", buf[100];
 char row[10][4] = {
                 " 0|",
                 " 1|",
@@ -129,15 +129,15 @@ void print_game_grid()
     }
 
     printf("\n");
-    disp();
-    printf("\n");
-    printf("Your Score: %d\tOpponent Score: %d", my_score, oppo_score);
-    printf("\n");
     printf("--Legend--\n");
     printf("O Ship\n");
     printf("@ Ship with hit\n");
     printf("X Missed Attack\n\n");
     printf("Game ends at Score 17.\n\n");
+    disp();
+    printf("\n");
+    printf("Your Score: %d\tOpponent Score: %d", my_score, oppo_score);
+    printf("\n");
 }
 
 void init_grids()
@@ -184,47 +184,58 @@ int entry_og(int xs, int ys, int xe, int ye, int size)
 void enter_grid()
 {
     clearScreen();
-    int xs, xe, ys, ye;
+    int xs, xe, y_starting, y_ending;
+    char ys, ye;
     //inputting
     print_outer_grid();
-    printf("Enter ship placments by specifying the the end points of each ship. Ex. Patrol Boat (size 2): 1 1 1 2\n");
+    printf("Enter ship placments by specifying the the end points of each ship. Ex. Patrol Boat (size 2): 1 A 1 B\n");
     printf("Aircraft Carrier(size 5):");
     do
     {
-        scanf("%d %d %d %d", &xs, &ys, &xe, &ye);
-    }while(entry_og(xs, ys, xe, ye, 5) == 0);
+        scanf("%d %c %d %c", &xs, &ys, &xe, &ye);
+        y_starting = ys - 'A';
+        y_ending = ye - 'A';
+    }while(entry_og(xs, y_starting, xe, y_ending, 5) == 0);
 
     print_outer_grid();
-    printf("Enter ship placments by specifying the the end points of each ship. Ex. Patrol Boat (size 2): 1 1 1 2\n");
+    printf("Enter ship placments by specifying the the end points of each ship. Ex. Patrol Boat (size 2): 1 A 1 B\n");
     printf("Battle Ships(size 4):");
     do
     {
-        scanf("%d %d %d %d", &xs, &ys, &xe, &ye);
-    }while(entry_og(xs, ys, xe, ye, 4) == 0);
+        scanf("%d %c %d %c", &xs, &ys, &xe, &ye);
+        y_starting = ys - 'A';
+        y_ending = ye - 'A';
+    }while(entry_og(xs, y_starting, xe, y_ending, 4) == 0);
 
     print_outer_grid();
-    printf("Enter ship placments by specifying the the end points of each ship. Ex. Patrol Boat (size 2): 1 1 1 2\n");
+    printf("Enter ship placments by specifying the the end points of each ship. Ex. Patrol Boat (size 2): 1 A 1 B\n");
     printf("Destroyer(size 3):");
     do
     {
-        scanf("%d %d %d %d", &xs, &ys, &xe, &ye);
-    }while(entry_og(xs, ys, xe, ye, 3) == 0);
+        scanf("%d %c %d %c", &xs, &ys, &xe, &ye);
+        y_starting = ys - 'A';
+        y_ending = ye - 'A';
+    }while(entry_og(xs, y_starting, xe, y_ending, 3) == 0);
 
     print_outer_grid();
-    printf("Enter ship placments by specifying the the end points of each ship. Ex. Patrol Boat (size 2): 1 1 1 2\n");
+    printf("Enter ship placments by specifying the the end points of each ship. Ex. Patrol Boat (size 2): 1 A 1 B\n");
     printf("Submarine(size 3):");
     do
     {
-        scanf("%d %d %d %d", &xs, &ys, &xe, &ye);
-    }while(entry_og(xs, ys, xe, ye, 3) == 0);    
+        scanf("%d %c %d %c", &xs, &ys, &xe, &ye);
+        y_starting = ys - 'A';
+        y_ending = ye - 'A';
+    }while(entry_og(xs, y_starting, xe, y_ending, 3) == 0);    
 
     print_outer_grid();
-    printf("Enter ship placments by specifying the the end points of each ship. Ex. Patrol Boat (size 2): 1 1 1 2\n");
+    printf("Enter ship placments by specifying the the end points of each ship. Ex. Patrol Boat (size 2): 1 A 1 B\n");
     printf("Patrol Boat(size 2):");
     do
     {
-        scanf("%d %d %d %d", &xs, &ys, &xe, &ye);
-    }while(entry_og(xs, ys, xe, ye, 2) == 0);    
+        scanf("%d %c %d %c", &xs, &ys, &xe, &ye);
+        y_starting = ys - 'A';
+        y_ending = ye - 'A';
+    }while(entry_og(xs, y_starting, xe, y_ending, 2) == 0);    
     print_outer_grid();
 }
 
@@ -296,9 +307,11 @@ int check_update(ship_move challenger)
 void make_move(int client_fd)
 {
     ship_move challenger;
+    char y;
     printf("Attack\n");
     printf("Enter the x and y coordinates: ");
-    scanf("%d %d", &challenger.first, &challenger.second);        
+    scanf("%d %c", &challenger.first, &y);        
+    challenger.second = y - 'A';
     send(client_fd, &challenger, sizeof(challenger), 0);
 
     //get response
