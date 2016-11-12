@@ -1,3 +1,8 @@
+
+# About
+
+This is a two player battleship game in C over TCP using linux system call.You need a linux operating system to run it. No additional libraries need to be installed. Other installation instructions are given below.
+
 # Battleship
 
 Battleship (also Battleships or Sea Battle) is a guessing game for two players. It is known worldwide as a pencil and paper game 
@@ -23,3 +28,10 @@ continues shooting until the player gets a miss.
 
 When all of the squares of a ship have been hit, the ship is sunk, and the ship's owner announces this (e.g. 
 "You sank my battleship!"). If all of a player's ships have been sunk, the game is over and their opponent wins.
+
+# Running the game
+
+Step 1: Clone the repository.
+Step 2: Run the game_server.c and the game_client.c
+Do as the programs says and be sure to set up the game_server before setting up the game_client and you are ready to play!
+Enjoy!
